@@ -1,0 +1,363 @@
+
+
+.banner {
+    position: relative;
+    overflow: auto;
+}
+
+.banner li {
+    list-style: none;
+}
+
+.banner ul li {
+    float: left;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+::selection {
+    background: #bfa57c;
+    color: #fff;
+}
+
+body {
+    color: #a48d66;
+    font: 14px/23px proxima-nova-alt, "Proxima Nova Alt", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+b {
+    font-weight: 300;
+    font-family: bree-web, Bree, sans-serif;
+}
+
+h2 {
+    font-size: 28px;
+    padding-bottom: 60px;
+}
+
+b {
+    font-weight: 500;
+    font-size: 16px;
+    color: #c3522f;
+}
+
+#logo {
+    position: absolute;
+    left: 80px;
+    top: 40px;
+    z-index: 2;
+    margin-left: -17px;
+}
+
+.banner {
+    position: relative;
+    width: 100%;
+    overflow: auto;
+    font-size: 18px;
+    line-height: 24px;
+    text-align: center;
+    color: rgba(255, 255, 255, .6);
+    text-shadow: 0 0 1px rgba(0, 0, 0, .05), 0 1px 2px rgba(0, 0, 0, .3);
+    background: #5b4d3d;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+}
+
+.banner ul {
+    list-style: none;
+    width: 300%;
+}
+
+.banner ul li {
+    display: block;
+    float: left;
+    width: 33%;
+    min-height: 350px;
+    -o-background-size: 100% 100%;
+    -ms-background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+    box-shadow: inset 0 -3px 6px rgba(0, 0, 0, .1);
+}
+
+.banner .inner {
+    padding: 160px 0 110px;
+}
+
+.banner h1,
+.banner h2 {
+    font-size: 40px;
+    line-height: 52px;
+    color: #fff;
+}
+
+.banner .btn {
+    display: inline-block;
+    margin: 25px 0 0;
+    padding: 9px 22px 7px;
+    clear: both;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 2px solid rgba(255, 255, 255, .4);
+    border-radius: 5px;
+}
+
+.banner .btn:hover {
+    background: rgba(255, 255, 255, .05);
+}
+
+.banner .btn:active {
+    -webkit-filter: drop-shadow(0 -1px 2px rgba(0, 0, 0, .5));
+    -moz-filter: drop-shadow(0 -1px 2px rgba(0, 0, 0, .5));
+    -ms-filter: drop-shadow(0 -1px 2px rgba(0, 0, 0, .5));
+    -o-filter: drop-shadow(0 -1px 2px rgba(0, 0, 0, .5));
+    filter: drop-shadow(0 -1px 2px rgba(0, 0, 0, .5));
+}
+
+.banner .btn,
+.banner .dot {
+    -webkit-filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+    -moz-filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+    -ms-filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+    -o-filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3));
+}
+
+.banner .dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 20px;
+}
+
+.banner .dots li {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    text-indent: -999em;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: .4;
+    -webkit-transition: background .5s, opacity .5s;
+    -moz-transition: background .5s, opacity .5s;
+    transition: background .5s, opacity .5s;
+}
+
+.banner .dots li.active {
+    background: #fff;
+    opacity: 1;
+}
+
+.banner .arrows {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    color: #fff;
+}
+
+.banner .arrow {
+    display: inline;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.features {
+    overflow: hidden;
+    padding: 50px 0;
+    background: #f7f7f6;
+    box-shadow: inset 0 -1px 3px rgba(0, 0, 0, .03);
+}
+
+.features li {
+    position: relative;
+    padding: 0 25px 0 40px;
+    list-style: none;
+    width: 25%;
+    float: left;
+}
+
+.features li:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: 24px;
+    height: 22px;
+    background: url('img/icons.png');
+}
+
+.features li.browser:before {
+    background-position: 0 -44px;
+}
+
+.features li.height:before {
+    background-position: 0 -22px;
+}
+
+.features li.responsive:before {
+    background-position: 0 -66px;
+}
+
+.features b {
+    display: block;
+    padding-bottom: 6px;
+}
+
+.how {
+    padding: 60px 0;
+}
+
+.how h2 {
+    color: #7c6853;
+}
+
+.how h3 {
+    padding-bottom: 8px;
+    color: #7b6b53;
+    font-size: 20px;
+    line-height: 10px;
+}
+
+.how li {
+    position: relative;
+    width: 375px;
+    margin: 0 0 40px 15px;
+    padding-left: 10px;
+}
+
+.how pre {
+    position: absolute;
+    left: 450px;
+    top: 0;
+    width: 495px;
+    padding: 20px 25px;
+    background: #f8f5f0;
+    color: #8a785d;
+    font-size: 12px;
+    line-height: 18px;
+    border-radius: 5px;
+    box-shadow: inset 0 2px 2px rgba(180, 157, 125, .15), inset 0 0 1px rgba(0, 0, 0, .2);
+}
+
+.how p {
+    padding-bottom: 15px;
+}
+
+.options {
+    padding: 60px 0;
+    background: #39342d;
+    color: #7b7368;
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, .2);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+}
+
+.options a {
+    opacity: .7;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, .2);
+    text-decoration: none;
+}
+
+.options a:hover {
+    opacity: 1;
+    border-bottom-color: rgba(255, 255, 255, .3);
+}
+
+.options p {
+    font-size: 16px;
+    line-height: 25px;
+    padding-bottom: 20px;
+}
+
+.options h2 {
+    color: #fff;
+    padding-bottom: 15px;
+}
+
+.options pre {
+    padding: 20px 25px;
+    background: #342f29;
+    color: #988f81;
+    font-size: 13px;
+    line-height: 19px;
+    box-shadow: inset 0 2px 2px rgba(0, 0, 0, .15), inset 0 0 1px rgba(0, 0, 0, .1);
+    border-radius: 5px;
+}
+
+.options pre span {
+    color: #706657;
+}
+
+.footer {
+    padding: 80px 0 60px;
+    text-align: center;
+}
+
+.wrap {
+    margin: 0 auto;
+    width: 960px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+
+    -webkit-font-smoothing: antialiased;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    text-decoration: none;
+    border: 0;
+}
+
+.wrap {
+    width: 940px;
+    margin: 0 auto;
+}
+
+.vertical {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+
+img {
+    -ms-interpolation-mode: nearest-neighbor;
+
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+html, body {
+    height: 100%;
+}

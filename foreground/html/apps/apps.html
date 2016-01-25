@@ -1,0 +1,63 @@
+<div class="clearfix container" style="width:100%;padding-top:20px">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="metismenu" id="menu">
+                <li class="active">
+                    <a href="#" aria-expanded="true">集群信息 <span class="glyphicon 
+arrow"></span></a>
+                    <ul aria-expanded="true">
+                        <li style="background:rgba(255, 255, 255, 0.2);"><a ui-sref="apps.clusterInfo" style="color:#fff">集群列表</a></li>
+                        <li><a ui-sref="apps.clusterInfo">资源列表</a></li>
+                        <li><a ui-sref="apps.clusterInfo">服务查询</a></li>
+                        <li><a ui-sref="apps.clusterInfo">机器查询</a></li>
+                        <li><a ui-sref="apps.clusterInfo">高级查询</a></li>
+                        <!--  <li>
+                            <a href="#" aria-expanded="false">分类 <span class="glyphicon arrow"></span></a>
+                            <ul aria-expanded="false">
+                                <li><a href="#">开发机资源</a></li>
+                                <li><a href="#">测试资源</a></li>
+                                <li><a href="#">线上资源</a></li>
+                            </ul>
+                        </li> -->
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" aria-expanded="false">机器分配 <span class="glyphicon 
+arrow"></span></a>
+                    <ul aria-expanded="false">
+                        <li><a href="#">开发机器</a></li>
+                        <li><a href="#">测试机器</a></li>
+                        <li><a href="#">线上机器</a></li>
+                        <li><a href="#">分配进度</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" aria-expanded="false">自助装机 <span class="glyphicon 
+arrow"></span></a>
+                    <ul aria-expanded="false">
+                        <li><a href="#">套餐定制</a></li>
+                        <li><a href="#">信息查询</a></li>
+                        <li><a href="#">装机进度</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    <section class="content" style="padding-left:30px">
+        <div ui-view></div>
+    </section>
+</div>
+</body>
+<script lang="javascript">
+$(function() {
+    $("#menu").metisMenu();
+    $("#menu li ul li a").click(
+        function() {
+            $(this).css("color", "#fff")
+            $(this).parent('li').css("background", "rgba(255, 255, 255, 0.2)")
+            $(this).parent('li').siblings().removeAttr("style")
+            $(this).parent('li').siblings().find('a').removeAttr("style")
+        }
+    );
+});
+</script>

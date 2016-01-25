@@ -1,177 +1,89 @@
 <html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <title>
-            丁丁租房私有云平台
-        </title>
-        <meta name="author" content="Surlymo, Dingding">
-        <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-        <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-        <link href="/css/style.css" rel="stylesheet" type="text/css">
-        <link href="/css/site.min.css" rel="stylesheet" type="text/css">
-        <link rel="shortcut icon" href="/pic/orange.icon"> 
-        <script src="/js/jquery-2.1.4.min.js" type="text/javascript"></script>
-        <script src="/js/unslider.min.js" type="text/javascript"></script>
-        <script src="/js/banner.js" type="text/javascript"></script>
 
-    </head>
-   
-    <body>
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span class="sr-only">Toggle navigation</span></button> <a class="navbar-brand hidden-sm" href="" onclick="">CloudTango</a>
-                </div>
-                <div class="navbar-collapse collapse" role="navigation">
-                    <ul class="nav navbar-nav">
-                        <li class="hidden-sm hidden-md">
-                            <a href="/apps" target="_self" onclick="">集群信息</a>
-                        </li>
-                        <li>
-                            <a href="" target="_self" onclick="">租户管理</a>
-                        </li>
-                        <li>
-                            <a href="" target="_self" onclick="">持续集成</a>
-                        </li>
-                        <li>
-                            <a href="" target="_self" onclick="">自动部署</a>
-                        </li>
-                        <li>
-                            <a href="" target="_self" onclick="">监控报警</a>
-                        </li>
-                        <li>
-                            <a href="" target="_self" onclick="">服务定制</a>
-                        </li>
-                        <li>
-                            <a href="" target="_self" onclick="">个人中心</a>
-                        </li>
-                        <li>
-                            <a href="" target="_self" onclick="">镜像仓库</a>
-                        </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right hidden-sm">
-                        <li>
-                            <a href="" onclick="">注册登陆</a>
-                        </li>
-                    </ul>
-                </div>
+<head>
+    <meta charset="utf-8">
+    <title>
+        丁丁租房私有云平台
+    </title>
+    <meta name="author" content="Surlymo, Dingding">
+    <link rel="shortcut icon" href="/pic/orange.icon">
+    <link href="/static/css/3rdparty/datatables.bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/3rdparty/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/3rdparty/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/3rdparty/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/3rdparty/site.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/3rdparty/metisMenu.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/3rdparty/leftslider.css" rel="stylesheet" type="text/css">
+    <script src="/static/js/3rdparty/jquery-2.1.4.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/jquery.dataTables.min.js"></script>
+    <script src="/static/js/3rdparty/angular.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/angular-resource.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/angular-datatables.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/angular-route.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/angular-ui-router.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/angular-datatables.bootstrap.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/unslider.min.js" type="text/javascript"></script>
+    <script src="/static/js/3rdparty/metisMenu.min.js"></script>
+    <script src="/static/js/core.js" type="text/javascript"></script>
+    <script src="/static/js/banner.js" type="text/javascript"></script>
+</head>
+
+<body ng-app="myApp">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span class="sr-only">Toggle navigation</span></button> <a class="navbar-brand hidden-sm" href="#" id="mainReturn" onclick="">CloudTango</a>
+            </div>
+            <div class="navbar-collapse collapse" role="navigation">
+                <ul id="cloudHeader" class="nav navbar-nav">
+                    <li>
+                        <a ui-sref="global">集群概况</a>
+                    </li>
+                    <li>
+                        <a ui-sref="apps.clusterInfo">机器管理</a>
+                    </li>
+                    <li>
+                        <a href="" target="_self" onclick="">租户管理</a>
+                    </li>
+                    <li>
+                        <a href="" target="_self" onclick="">持续集成</a>
+                    </li>
+                    <li>
+                        <a href="" target="_self" onclick="">自动部署</a>
+                    </li>
+                    <li>
+                        <a href="" target="_self" onclick="">监控报警</a>
+                    </li>
+                    <li>
+                        <a href="" target="_self" onclick="">服务定制</a>
+                    </li>
+                    <li>
+                        <a href="" target="_self" onclick="">个人中心</a>
+                    </li>
+                    <li>
+                        <a href="" target="_self" onclick="">镜像仓库</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right hidden-sm">
+                    <li>
+                        <a href="" onclick="">注册登陆</a>
+                    </li>
+                </ul>
             </div>
         </div>
-            <div class="banner">
-            <ul>
-                <li style="background-image: url('/pic/glass.jpg');">
-                    <div class="inner">
-                        <h1>CloudTango Platform aim to CLOUD Everything</h1>
-                        <p>将一切都进行云化！私有云平台一期上线啦</p>
-
-                        <a class="btn" href="#">使用说明</a>
-                    </div>
-                </li>
-
-                <li style="background-image: url('/pic/wood.jpg');">
-                    <div class="inner">
-                        <h1>Cluster has never been so CLEAR and CLEVER </h1>
-                        <p>不管是java、c、node还是基础服务，在云上都有与服务实例直接挂钩的多维度集群信息</p>
-
-                        <a class="btn" href="#">集群信息</a>
-                    </div>
-                </li>
-
-                <li style="background-image: url('/pic/fire.jpg');">
-                    <div class="inner">
-                        <h1>Open Source and Chase what will make us better</h1>
-                        <p>开源，倾听，让我们追求卓越的用户体验和代码质量！</p>
-
-                        <a class="btn" href="">github地址</a>
-                    </div>
+    </div>
+    <div ui-view></div>
+    <a ui-sref="index"></a>
+    <div class="container">
+        <div class="row footer-bottom">
+            <ul class="list-inline text-center">
+                <li>Copyright © 2015 - 2016 Dingding. All Rights Reserved
                 </li>
             </ul>
-       
         </div>
-        <div class="bc-social">
-            <div class="container">
-                <ul class="bc-social-buttons">
-                    <li class="social-forum">
-                        <a class="" href="" title="常见问答" target="_blank" onclick=""><i class="icon-comments"></i>&nbsp常见问答</a>
-                    </li>
-                    <li class="social-weibo">
-                        <a href="" title="如有疑问请联系inf@zufangit.cn" target="_blank" onclick=""><i class="icon-envelope-alt"></i>&nbsp如有疑问请联系inf@zufangit.cn</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+    </div>
+</body>
 
-        
-
-
-        <div class="container projects">
-            <div class="projects-header page-header">
-                <h3>
-                    私有云常用功能
-                </h3>
-            </div>
-            <div class="row">
-                <div class="col-sm-6 col-md-4 col-lg-3">
-                    <div class="thumbnail">
-                        <a href="" title="租户管理" target="_blank" onclick=""><img class="lazy" src="/pic/rentuser.jpg" width="300" height="150" alt="租户管理"></a>
-                        <div class="caption">
-                            <h3>
-                                <a href="" title="租户管理" target="_blank" onclick="">租户管理</a>
-                            </h3>
-                            <p>
-                                有新feature，提供监控和报警balabala
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3">
-                    <div class="thumbnail">
-                        <a href="" title="集群信息" target="_blank" onclick=""><img class="lazy" src="/pic/basicinfo.jpg" width="300" height="150" alt="集群信息"></a>
-                        <div class="caption">
-                            <h3>
-                                <a href="" title="集群信息" target="_blank" onclick="">集群信息</a>
-                            </h3>
-                            <p>
-                                集群信息
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3">
-                    <div class="thumbnail">
-                        <a href="" title="持续集成" target="_blank" onclick=""><img class="lazy" src="/pic/ci.jpg" width="300" height="150" alt="Cikonss"></a>
-                        <div class="caption">
-                            <h3>
-                                <a href="/p/cikonss/" title="持续集成" target="_blank" onclick="">持续集成</a>
-                            </h3>
-                            <p>
-                                持续集成
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-4 col-lg-3">
-                    <div class="thumbnail">
-                        <a href="" title="有新feature，提供监控和报警balabala" target="_blank" onclick=""><img class="lazy" src="/pic/monitor.jpg" width="300" height="150" alt="Headroom.js"></a>
-                        <div class="caption">
-                            <h3>
-                                <a href="" title="有新feature，提供监控和报警balabala" target="_blank" onclick="">天眼系统</a>
-                            </h3>
-                            <p>
-                                有新feature，提供监控和报警balabala
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row footer-bottom">
-                <ul class="list-inline text-center">
-                    <li>Copyright © 2015 - 2016 Dingding. All Rights Reserved
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </body>
 </html>

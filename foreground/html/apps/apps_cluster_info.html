@@ -1,0 +1,30 @@
+<table datatable="ng" dt-options="this.dtOptions" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th width="15%">应用名</th>
+            <th width="12%">内存(MB)</th>
+            <th width="10%">CPU</th>
+            <th width="13%">运行/总实例</th>
+            <th width="20%">健康</th>
+            <th width="20%">所属组别</th>
+            <th width="10%">状态</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="x in data">
+            <td>{{x.Id}}</td>
+            <td>{{x.Mem}}</td>
+            <td>{{x.Cpus}}</td>
+            <td>{{x.CurrentInstances}}/{{x.Instances}}</td>
+            <td>
+                <div class="progress" style="margin-bottom: 0px; padding-right:0px">
+                    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:{{x.Healthy}}%">
+                        <span class="sr-only">{{x.Healthy}}% Complete</span>
+                    </div>
+                </div>
+            </td>
+            <td>{{x.Group}}</td>
+            <td>{{x.Status}}</td>
+        </tr>
+    </tbody>
+</table>

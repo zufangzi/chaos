@@ -10,6 +10,7 @@ type MarathonAppsRequest struct {
 	Disk      float64                `json:"disk,omitempty"`
 	Version   string                 `json:"version,omitempty"`
 	Container map[string]interface{} `json:"container,omitempty"`
+	Labels    map[string]string      `json:"labels,omitempty"`
 }
 
 // only be used in request

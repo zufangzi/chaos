@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"opensource/chaos/server/dto"
@@ -7,10 +7,12 @@ import (
 	"opensource/chaos/server/utils/fasthttp"
 )
 
-func createOrUpdateAppsService(request dto.DeployAppsSimpleRequest) (interface{}, int) {
-	deployInfo := utils.BuildAppsRequest(request)
-	finalRequest := make([]marathon.MarathonAppsRequest, 1)
-	finalRequest[0] = *deployInfo
+func CreateOrUpdateAppsService(request dto.DeployAppsBatchRequest) (interface{}, int) {
+	finalRequest := make([]marathon.MarathonAppsRequest, len(request.Batch))
+	for i, v := range request.Batch {
+		deployInfo := utils.BuildAppsRequest(v)
+		finalRequest[i] = *deployInfo
+	}
 	var response map[string]interface{}
 	code := fasthttp.JsonReqAndResHandler(utils.Path.MarathonAppsUrl, finalRequest, &response, "PUT")
 	return response, code

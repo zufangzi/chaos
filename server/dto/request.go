@@ -1,6 +1,12 @@
 package dto
 
-type DeployAppsSimpleRequest struct {
+// 部署一个或者多个apps的请求
+type DeployAppsBatchRequest struct {
+	Batch []DeployAppsRequest
+	CommonRequest
+}
+
+type DeployAppsRequest struct {
 	Id          string
 	ExportPorts []ExportPort
 	Cpus        string
@@ -8,6 +14,7 @@ type DeployAppsSimpleRequest struct {
 	Instances   string
 	Image       string
 	Version     string
+	CommonRequest
 }
 
 type ExportPort struct {
@@ -15,18 +22,35 @@ type ExportPort struct {
 	Desc          string
 }
 
-type DeployGroupsSimpleRequest struct {
+// 部署一个或者多个groups的请求
+type DeployGroupsBatchRequest struct {
+	Batch []DeployGroupsRequest
+	CommonRequest
+}
+
+type DeployGroupsRequest struct {
 	Id     string
 	Groups []GroupsInfo
+	CommonRequest
 }
 
 type GroupsInfo struct {
 	Id   string
-	Apps []DeployAppsSimpleRequest
+	Apps []DeployAppsRequest
 }
 
-// 使用的时候提供的接口提供批量接口
+// 回滚一个或者多个apps的请求
+type RollbackAppsBatchRequest struct {
+	Batch []RollbackAppsRequest
+	CommonRequest
+}
+
 type RollbackAppsRequest struct {
 	Id      string
 	Version string
+	CommonRequest
+}
+
+type CommonRequest struct {
+	SyncType string
 }

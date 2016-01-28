@@ -10,11 +10,16 @@ import (
 	"opensource/chaos/server/utils"
 	"os"
 	"path"
+	"runtime"
 	"time"
 )
 
 // templates := make(map[string]*template.Template) will occur "non-declaration statement outside function body" error
 var templates = make(map[string]*template.Template)
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 func main() {
 	fmt.Println("now begin to run server, please wait...")

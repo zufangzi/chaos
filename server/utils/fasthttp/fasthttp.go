@@ -17,7 +17,7 @@ func JsonReqAndResHandler(url string, req interface{}, res interface{}, reqType 
 	case "PUT":
 		bodyBuffer = getBufferReader(req)
 	default:
-		log.Println("now in DEFAUTL swtich case...")
+		// log.Println("now in DEFAUTL swtich case...")
 	}
 	client := &http.Client{}
 	request, err := http.NewRequest(reqType, url, bodyBuffer)

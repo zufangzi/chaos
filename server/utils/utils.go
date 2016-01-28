@@ -1,14 +1,14 @@
 package utils
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/ant0ine/go-json-rest/rest"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"opensource/chaos/server/dto"
 	"opensource/chaos/server/dto/marathon"
 	"strconv"
-	"time"
 )
 
 var fastDocker *FastDocker
@@ -17,13 +17,13 @@ func init() {
 	fastDocker = new(FastDocker)
 }
 
-func ParseOuterRequest(r *rest.Request, request interface{}) {
-	err := r.DecodeJsonPayload(&request)
+func ParseOuterRequest(body []byte, request interface{}) {
+	err := json.Unmarshal(body, &request)
 	CheckError(err)
 	log.Println("the request data is: ", request)
 }
 
-func BuildAppsRequest(request dto.DeployAppsSimpleRequest) (appsReq *marathon.MarathonAppsRequest) {
+func BuildAppsRequest(request dto.DeployAppsRequest) (appsReq *marathon.MarathonAppsRequest) {
 	deployInfo := marathon.NewMarathonAppsRequest()
 	deployInfo.Id = request.Id
 	deployInfo.Cpus, _ = strconv.ParseFloat(request.Cpus, 64)
@@ -31,13 +31,12 @@ func BuildAppsRequest(request dto.DeployAppsSimpleRequest) (appsReq *marathon.Ma
 	deployInfo.Instances, _ = strconv.Atoi(request.Instances)
 	container := marathon.NewMarathonDockerContainer()
 	if request.Version != "" {
-		container.Image = "10.32.27.82:5000/" + request.Image + ":" + request.Version
+		container.Image = request.Image + ":" + request.Version
 	} else {
 		// 拿到最新的时间戳的tag
-		container.Image = fastDocker.GetImageByFreshness(request.Image, "", "", 0, false)
+		container.Image, _, _ = fastDocker.GetImageAndTagByFreshness(request.Image, "", "", 0, false)
 
 	}
-	fmt.Println("d")
 
 	// 如果设定了端口，那么就处理
 	var ports []marathon.MarathonDockerPort
@@ -76,21 +75,20 @@ func AddDefaultPorts() *marathon.MarathonDockerPort {
 	return port
 }
 
-func ProcessResponse(w rest.ResponseWriter, code int, response interface{}) {
-	ProcessResponseFully(w, code, response, true)
+func ProcessResponse(code int, response interface{}) interface{} {
+	return ProcessResponseFully(code, response, true)
 }
 
-func ProcessResponseFully(w rest.ResponseWriter, code int, response interface{}, shouldHideSuccessInfo bool) {
+func ProcessResponseFully(code int, response interface{}, shouldHideSuccessInfo bool) interface{} {
 
 	if !shouldHideSuccessInfo {
-		w.WriteJson(response)
-		return
+		return response
 	}
 
 	if code != http.StatusCreated && code != http.StatusOK && code != http.StatusAccepted {
-		w.WriteJson(response)
+		return response
 	} else {
-		w.WriteJson(map[string]string{"status": "ok"})
+		return map[string]string{"status": "ok"}
 	}
 }
 
@@ -101,18 +99,44 @@ func CheckError(err error) {
 	}
 }
 
-func RestGuarder(method rest.HandlerFunc) rest.HandlerFunc {
+type RestFunc func(data []byte) interface{}
+
+func RestGuarder(method RestFunc) rest.HandlerFunc {
 	return func(w rest.ResponseWriter, r *rest.Request) {
-		begin := time.Now().UnixNano()
+		// begin := time.Now().UnixNano()
 		defer func() {
 			// func().(xx) means method return type cast
 			// if in args type cast case. you can use string(xx) or xx.(string)
 			if e, ok := recover().(error); ok {
 				rest.Error(w, e.Error(), http.StatusInternalServerError)
-				log.Println("catchable system error occur. " + e.Error())
+				log.Println("catchable system error occur: ", e)
 			}
-			log.Printf("the request: %s cost: %d ms\n", r.URL.RequestURI(), ((time.Now().UnixNano() - begin) / 1000000))
+			// log.Printf("the request: %s cost: %d ms\n", r.URL.RequestURI(), ((time.Now().UnixNano() - begin) / 1000000))
 		}()
-		method(w, r)
+
+		var request dto.CommonRequest
+		content, err := ioutil.ReadAll(r.Body)
+		defer r.Body.Close()
+		CheckError(err)
+		if len(content) == 0 {
+			w.WriteJson(method(nil))
+			return
+		}
+		err = json.Unmarshal(content, &request)
+		CheckError(err)
+		switch request.SyncType {
+		case "sync":
+			log.Println("now use sync mode")
+			w.WriteJson(method(content))
+		case "async":
+			log.Println("now use async mode")
+			go method(content)
+			w.WriteJson(map[string]string{"status": "ok"})
+		default:
+			log.Println("now use default mode(sync)", request.SyncType)
+			w.WriteJson(method(content))
+
+		}
+
 	}
 }

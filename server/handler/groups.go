@@ -7,7 +7,7 @@ import (
 	"opensource/chaos/server/utils/fasthttp"
 )
 
-func DeployGroupsHandler(data []byte) interface{} {
+func DeployGroupsHandler(pathParams map[string]string, data []byte) interface{} {
 	var request dto.DeployGroupsRequest
 	utils.ParseOuterRequest(data, &request)
 

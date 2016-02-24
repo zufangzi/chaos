@@ -62,11 +62,9 @@ func renderPage(w http.ResponseWriter, tmpl string, values map[string]interface{
 }
 
 func init() {
-
 	htmlPath := os.Getenv("GOPATH") + utils.STATIC_DIR + string(os.PathSeparator) + utils.TMPL_NAME + string(os.PathSeparator)
 	fileInfoArray, err := ioutil.ReadDir(htmlPath)
 	utils.CheckError(err)
-
 	var fileName, filePath string
 	for _, fileInfo := range fileInfoArray {
 		fileName = fileInfo.Name()

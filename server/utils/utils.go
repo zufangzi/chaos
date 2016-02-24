@@ -2,8 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"github.com/ant0ine/go-json-rest/rest"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"opensource/chaos/server/dto"
@@ -96,47 +94,5 @@ func CheckError(err error) {
 	if err != nil {
 		log.Fatalln("fatal occur.", err.Error())
 		panic(err)
-	}
-}
-
-type RestFunc func(data []byte) interface{}
-
-func RestGuarder(method RestFunc) rest.HandlerFunc {
-	return func(w rest.ResponseWriter, r *rest.Request) {
-		// begin := time.Now().UnixNano()
-		defer func() {
-			// func().(xx) means method return type cast
-			// if in args type cast case. you can use string(xx) or xx.(string)
-			if e, ok := recover().(error); ok {
-				rest.Error(w, e.Error(), http.StatusInternalServerError)
-				log.Println("catchable system error occur: ", e)
-			}
-			// log.Printf("the request: %s cost: %d ms\n", r.URL.RequestURI(), ((time.Now().UnixNano() - begin) / 1000000))
-		}()
-
-		var request dto.CommonRequest
-		content, err := ioutil.ReadAll(r.Body)
-		defer r.Body.Close()
-		CheckError(err)
-		if len(content) == 0 {
-			w.WriteJson(method(nil))
-			return
-		}
-		err = json.Unmarshal(content, &request)
-		CheckError(err)
-		switch request.SyncType {
-		case "sync":
-			log.Println("now use sync mode")
-			w.WriteJson(method(content))
-		case "async":
-			log.Println("now use async mode")
-			go method(content)
-			w.WriteJson(map[string]string{"status": "ok"})
-		default:
-			log.Println("now use default mode(sync)", request.SyncType)
-			w.WriteJson(method(content))
-
-		}
-
 	}
 }

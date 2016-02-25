@@ -5,6 +5,7 @@ import (
 	"flag"
 	// "fmt"
 	consulApi "github.com/hashicorp/consul/api"
+	"github.com/hashicorp/go-cleanhttp"
 	"log"
 	"os"
 	"os/exec"
@@ -14,7 +15,7 @@ import (
 )
 
 var consulClient *consulApi.Client
-var serviceId, serviceName, servicePort string
+var serviceId, serviceName, servicePort, serviceIp string
 var serviceTags []string
 var isNormal bool
 var fatalExit chan int
@@ -32,10 +33,11 @@ func assert(param interface{}) {
 	}
 }
 
-func main() {
+func initEnv() {
 	// 让命令行的命令生效
 	flag.Parse()
 	// 初始化一些初始变量
+	serviceIp = getShell("hostname -i")
 	serviceName = os.Getenv("SERVICE_NAME")
 	assert(serviceName)
 	servicePort = os.Getenv("SERVICE_PORT")
@@ -45,6 +47,22 @@ func main() {
 
 	// 给一个channel，如果没有严重错误就永久等待
 	fatalExit = make(chan int)
+}
+
+func defaultConfig() *consulApi.Config {
+	// 拿ip最后一位设置为1，即为宿主机ip。默认宿主机上必须有consul
+	hostIp := serviceIp[:strings.LastIndex(serviceIp, ".")] + ".1:5000"
+	config := &consulApi.Config{
+		Address:    hostIp,
+		Scheme:     "http",
+		HttpClient: cleanhttp.DefaultClient(),
+	}
+	return config
+}
+
+func main() {
+
+	initEnv()
 
 	// 持续监听指定端口号，采用netstat -nlp | grep ":$PORT"来实现，隔5s来一次
 	log.Printf("[REGISTRATOR]Now begin to listen service: %s with service port: %s.", serviceName, servicePort)
@@ -68,7 +86,7 @@ func main() {
 
 	// 启动成功的话，就先初始化consul客户端
 	log.Println("[REGISTRATOR]Now begin to process registration!")
-	consulClient, _ = consulApi.NewClient(consulApi.DefaultConfig())
+	consulClient, _ = consulApi.NewClient(defaultConfig())
 
 	// 然后调用consulapi进行注册
 	register()
@@ -101,34 +119,36 @@ func main() {
 	log.Fatalln("[REGISTRATOR]Error...", <-fatalExit)
 }
 
-func monitor() bool {
-	cmd := exec.Command("/bin/sh", "-c", "netstat -nlp | grep \":"+servicePort+"\"|wc -l")
-	serviceCntBytes, err := cmd.Output()
+func getShell(cmdStr string) string {
+	cmd := exec.Command("/bin/sh", "-c", cmdStr)
+	out, err := cmd.Output()
 	if err != nil {
-		panic(errors.New("error occur..."))
+		panic(errors.New("error occur while process shell cmd"))
 	}
-	cleanCntStr := string(serviceCntBytes)
-	cnt, _ := strconv.Atoi(cleanCntStr[0:strings.Index(cleanCntStr, "\n")])
+	cleanOut := string(out)
+	realOut := cleanOut[0:strings.Index(cleanOut, "\n")]
+	return realOut
+}
+
+func monitor() bool {
+	cnt, _ := strconv.Atoi(getShell("netstat -nlp | grep \":" + servicePort + "\"|wc -l"))
 	log.Println("[REGISTRATOR]Now found counts: ", cnt)
 	return cnt > 0
 }
 
 func register() {
-	cmd := exec.Command("/bin/sh", "-c", "hostname -i")
-	ip, _ := cmd.Output()
 	registration := new(consulApi.AgentServiceRegistration)
 	registration.ID = serviceId
 	registration.Name = serviceName
 	registration.Port, _ = strconv.Atoi(servicePort)
 	registration.Tags = serviceTags
-	clearIp, _ := strconv.Atoi(string(ip)[0:strings.Index(string(ip), "\n")])
-	registration.Address = string(clearIp)
+	registration.Address = serviceIp
 	// TODO build Check latter
 	log.Println("ID is: ", registration.ID)
 	log.Println("Name is: ", registration.Name)
 	log.Println("Port is: ", registration.Port)
 	log.Println("Tags is: ", registration.Tags)
-	log.Println("Address is: ", clearIp)
+	log.Println("Address is: ", registration.Address)
 	consulClient.Agent().ServiceRegister(registration)
 }
 

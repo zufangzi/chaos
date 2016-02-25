@@ -1,0 +1,63 @@
+# initial image
+
+FROM centos:6
+
+# 优先从本地DNS-server找
+RUN echo 'nameserver 127.0.0.1' > /etc/resolv.conf
+
+# 进行DNS替换和yum源安装
+RUN yum -y install wget && wget http://src.ops.zufangit.cn/Scripts/yum.sh && /bin/sh yum.sh
+
+# 安装必须的软件
+RUN yum -y install dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which nginx
+
+# dnsmasq
+RUN cp /etc/resolv.conf /etc/resolv.dnsmasq.conf
+RUN cp /etc/hosts /etc/dnsmasq.hosts
+
+# 账号密码
+RUN useradd work
+RUN echo "dingding" | passwd work --stdin
+
+# 给当前用户加上可写权限
+RUN chmod u+w /etc/sudoers
+
+# 添加work权限
+RUN  echo "work	ALL=(ALL)	ALL" >> /etc/sudoers
+
+# 确保能够使用sudo指定。否则可能会报sudo: sorry, you must have a tty to run sudo
+RUN sed -i '/^Defaults    requiretty/c#Defaults    requiretty/g' /etc/sudoers
+
+# 增加dsa和rsa的ssh-key
+RUN ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
+RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+
+# 安装setuptools/pip/supervisor.此处暂时没有安装python2.7，2.6还在被支持。以后要生产化一定需要改掉
+RUN sudo curl -fL https://pypi.python.org/packages/source/p/pip/pip-8.0.2.tar.gz#md5=3a73c4188f8dbad6a1e6f6d44d117eeb | tar xzf - -C /home/work
+RUN sudo curl -fL https://bootstrap.pypa.io/ez_setup.py | sudo python -
+WORKDIR /home/work/pip-8.0.2
+RUN python setup.py install && pip install supervisor
+
+# 抓取consul并进行安装
+WORKDIR /home/work
+RUN wget http://10.32.27.11/cc/consul && chmod +x consul && mv consul /bin
+
+# 抓取consul-registrator并进行安装
+RUN wget http://10.32.27.11/cc/registrator && chmod +x registrator && mv registrator /bin
+
+# 获取supervisor配置文件
+RUN wget http://10.32.27.11/cc/supervisord.conf && mv supervisord.conf /etc
+
+# 安装DNSMASQ
+RUN wget http://10.32.27.11/cc/dnsmasq.conf && mv dnsmasq.conf /etc
+
+# 安装Consul-template
+RUN wget http://10.32.27.11/cc/consul-template && chmod +x consul-template && mv consul-template /bin
+RUN wget http://10.32.27.11/cc/dependency.sh 
+
+# 用supervisor启动sshd
+ENTRYPOINT ["/usr/bin/supervisord"]
+
+# 开放端口
+EXPOSE 22 8500 8080 8000 7999
+#EXPOSE 8400 8500 8600 8080 8005 8000 7999 1901 22 443 80

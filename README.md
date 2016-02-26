@@ -1,6 +1,7 @@
 #Chaos
 
 ##QuickStart
+### 私有云平台
 + 如需要可执行程序，请执行go install opensource/chaos/server (相对于$GOPATH/src下的项目放置位置。目前开发版本放置在示例的目录下)，之后到bin目录下找到server的可执行程序双击之后。打开浏览器输入`localhost:8080`即可登录私有云平台界面。同时rest api也全部生效。
 + 如希望直接执行，则请执行`go run $YOUR_PATH_PREFIX/server/*.go`之后即全部生效。
 
@@ -14,6 +15,18 @@
 + /deploy/apps/updater 对单个或者多个服务进行新增或者更新
 + /deploy/groups 对单个或者多个组进行一键部署
 + /info 获取所有服务信息
+
+### 微服务容器
+每个容器都会带有如下几个基础进程：
++ sshd 便于进行ssh登录
++ supervisor 守护进程
++ consul-template 服务发现
++ registrator 服务注册
++ nginx 路由、负载均衡
+
+1. 修改对应Dockerfile里面的IP地址。
+2. 确保要部署的服务被打包成output.tar.gz,并且在解压后的根目录下带有run.sh和dependency两个文件。dependency代表依赖的服务，一行一个。run.sh为启动脚本。
+3. 启动时候容器需要携带环境变量`$SERVICE_NAME`和`$SERVICE_PORT`。结束。至此微服务所需的负载均衡、服务发现、服务注册、路由已经都起来了。
 
 ##Introdution
 丁丁私有云平台server。提供微服务基础组件、监控、历史记录以及上线部署等的支持。具体后续更新

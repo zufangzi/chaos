@@ -24,8 +24,9 @@
 + registrator 服务注册
 + nginx 路由、负载均衡
 
+步骤：
 1. 修改对应Dockerfile里面的IP地址。
-2. 确保要部署的服务被打包成output.tar.gz,并且在解压后的根目录下带有run.sh和dependency两个文件。dependency代表依赖的服务，一行一个。run.sh为启动脚本。
+2. 确保要部署的服务被打包成output.tar.gz,并且在解压后的根目录下带有`run.sh`和`dependency`两个文件。`dependency`代表依赖的服务，一行一个。`run.sh`为启动脚本。
 3. 启动时候容器需要携带环境变量`$SERVICE_NAME`和`$SERVICE_PORT`。结束。至此微服务所需的负载均衡、服务发现、服务注册、路由已经都起来了。
 
 ##Introdution

@@ -25,13 +25,13 @@
 + nginx 路由、负载均衡
 + dnsmasq 本地dns解析，将*.service.consul域名全部解析到127.0.0.1
 
-** 步骤：**
+**步骤**
 + 修改对应Dockerfile里面的IP地址为你所用的地址。
 + 确保要部署的服务被打包成output.tar.gz,并且在解压后的根目录下带有`run.sh`和`dependency`两个文件。`dependency`代表依赖的服务，一行一个。比如访问zk的域名为zk.service.consul，则`dependency`文件中则写入**zk**。若无依赖，填入"**empty**"。`run.sh`为启动脚本。
 + 每个宿主机都启动Consul Agent，其中选择3-5个作为Server节点。组成集群。
 + 启动时候容器需要携带环境变量`$SERVICE_NAME`和`$SERVICE_PORT`。结束。至此微服务所需的负载均衡、服务发现、服务注册、路由已经都起来了。
 
-** 例外：**
+**例外**
 待补充
 
 ##Introdution

@@ -1,19 +1,11 @@
 # initial image
-
 FROM centos:6
-
-# 优先从本地DNS-server找
-RUN echo 'nameserver 127.0.0.1' > /etc/resolv.conf
 
 # 进行DNS替换和yum源安装
 RUN yum -y install wget && wget http://src.ops.zufangit.cn/Scripts/yum.sh && /bin/sh yum.sh
 
 # 安装必须的软件
 RUN yum -y install dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which nginx
-
-# dnsmasq
-RUN cp /etc/resolv.conf /etc/resolv.dnsmasq.conf
-RUN cp /etc/hosts /etc/dnsmasq.hosts
 
 # 账号密码
 RUN useradd work
@@ -54,10 +46,11 @@ RUN wget http://10.32.27.11/cc/dnsmasq.conf && mv dnsmasq.conf /etc
 # 安装Consul-template
 RUN wget http://10.32.27.11/cc/consul-template && chmod +x consul-template && mv consul-template /bin
 RUN wget http://10.32.27.11/cc/dependency.sh 
+RUN wget http://10.32.27.11/cc/start-template.sh
+RUN wget http://10.32.27.11/cc/start-dnsmasq.sh
 
 # 用supervisor启动sshd
 ENTRYPOINT ["/usr/bin/supervisord"]
 
 # 开放端口
-EXPOSE 22 8500 8080 8000 7999
-#EXPOSE 8400 8500 8600 8080 8005 8000 7999 1901 22 443 80
+EXPOSE 22

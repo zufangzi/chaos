@@ -6,8 +6,3 @@ RUN mkdir service
 RUN wget http://10.32.27.11/cc/project/zookeeper/80/output.tar.gz && tar -zxvf output.tar.gz -C service/ && cd service && mv `ls` output
 WORKDIR /home/work/service/output
 RUN sh /home/work/dependency.sh /home/work/service/output/dependency && mv nginx.conf /home/work #dependency要在持续集成阶段自动扫描打入
-
-ENTRYPOINT ["/usr/bin/supervisord"]
-
-# 开放端口
-EXPOSE 2181

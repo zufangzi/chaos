@@ -1,54 +1,55 @@
 # initial image
 FROM centos:6
+MAINTAINER Surlymo <surlymo@126.com>
 
 # 进行DNS替换和yum源安装
 RUN yum -y install wget && wget http://src.ops.zufangit.cn/Scripts/yum.sh && /bin/sh yum.sh
 
 # 安装必须的软件
-RUN yum -y install dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which nginx
+RUN yum -y install dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which zlib zlib-devel pcre-devel gcc gcc-c++ ncurses-devel perl 
 
-# 账号密码
-RUN useradd work
-RUN echo "dingding" | passwd work --stdin
-
-# 给当前用户加上可写权限
-RUN chmod u+w /etc/sudoers
-
-# 添加work权限
-RUN  echo "work	ALL=(ALL)	ALL" >> /etc/sudoers
-
+# 账号密码 & 权限 & 增加dsa和rsa的ssh-key
 # 确保能够使用sudo指定。否则可能会报sudo: sorry, you must have a tty to run sudo
-RUN sed -i '/^Defaults    requiretty/c#Defaults    requiretty/g' /etc/sudoers
+RUN useradd work && echo "dingding" | passwd work --stdin \
+  && chmod u+w /etc/sudoers && echo "work	ALL=(ALL)	ALL" >> /etc/sudoers \
+  && sed -i '/^Defaults    requiretty/c#Defaults    requiretty/g' /etc/sudoers \ 
+  && ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key && ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
 
-# 增加dsa和rsa的ssh-key
-RUN ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
-RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-
+# 安装服务发现、负载均衡核心程序。依次为：
 # 安装setuptools/pip/supervisor.此处暂时没有安装python2.7，2.6还在被支持。以后要生产化一定需要改掉
-RUN sudo curl -fL https://pypi.python.org/packages/source/p/pip/pip-8.0.2.tar.gz#md5=3a73c4188f8dbad6a1e6f6d44d117eeb | tar xzf - -C /home/work
-RUN sudo curl -fL https://bootstrap.pypa.io/ez_setup.py | sudo python -
-WORKDIR /home/work/pip-8.0.2
-RUN python setup.py install && pip install supervisor
-
-# 抓取consul并进行安装
-WORKDIR /home/work
-RUN wget http://10.32.27.11/cc/consul && chmod +x consul && mv consul /bin
-
+# 安装nginx并打开stream，并将nginx的默认启动设置为前台进程
+# consul-template环境配置
+# 获取生成nginx.conf的脚本
+# 获取consul-template启动脚本
+# 获取dnsmasq启动脚本
+# 安装consul
 # 抓取consul-registrator并进行安装
-RUN wget http://10.32.27.11/cc/registrator && chmod +x registrator && mv registrator /bin
-
 # 获取supervisor配置文件
-RUN wget http://10.32.27.11/cc/supervisord.conf && mv supervisord.conf /etc
-
 # 安装DNSMASQ
-RUN wget http://10.32.27.11/cc/dnsmasq.conf && mv dnsmasq.conf /etc
+RUN sudo curl -fL http://10.32.27.11/cc/pip-8.0.2.tar.gz | tar xzf - -C /home/work && sudo curl -fL http://10.32.27.11/cc/ez_setup.py | sudo python - \
+  && cd /home/work/pip-8.0.2 \
+  && python setup.py install && pip install supervisor \
+  && cd /home/work \
+  && wget http://10.32.27.11/cc/nginx-1.9.12.tar.gz && tar -zxvf nginx-1.9.12.tar.gz -C /home/work \
+  && cd nginx-1.9.12  \
+  && ./configure --prefix=/home/work/nginx --with-stream && make && make install \
+  && echo "daemon off;" >> /home/work/nginx/conf/nginx.conf \
+  && cd /home/work \
+  && wget http://10.32.27.11/cc/consul-template && chmod +x consul-template && mv consul-template /bin \ 
+  && wget http://10.32.27.11/cc/dependency.sh \ 
+  && wget http://10.32.27.11/cc/start-template.sh \
+  && wget http://10.32.27.11/cc/start-dnsmasq.sh \
+  && wget http://10.32.27.11/cc/consul && chmod +x consul && mv consul /bin \ 
+  && wget http://10.32.27.11/cc/registrator && chmod +x registrator && mv registrator /bin \ 
+  && wget http://10.32.27.11/cc/supervisord.conf && mv supervisord.conf /etc && mkdir /home/work/log \
+  && wget http://10.32.27.11/cc/dnsmasq.conf && mv dnsmasq.conf /etc 
 
-# 安装Consul-template
-RUN wget http://10.32.27.11/cc/consul-template && chmod +x consul-template && mv consul-template /bin
-RUN wget http://10.32.27.11/cc/dependency.sh 
-RUN wget http://10.32.27.11/cc/start-template.sh
-RUN wget http://10.32.27.11/cc/start-dnsmasq.sh
-
+#安装go环境
+ENV GOROOT /home/work/go
+ENV PATH $PATH:$GOROOT/bin
+ENV GOPATH /home/work/gospace
+RUN wget http://10.32.27.11/cc/go1.5.linux-amd64.tar.gz && tar -C /home/work/ -zxf go1.5.linux-amd64.tar.gz 
+  
 # 用supervisor启动sshd
 ENTRYPOINT ["/usr/bin/supervisord"]
 

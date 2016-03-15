@@ -41,7 +41,8 @@ func defaultConfig() *consulApi.Config {
 	// 拿ip最后一位设置为1，即为宿主机ip。默认宿主机上必须有consul
 	// Deprecated。采用OVS+none划分VLAN的方式重做二层网络。采用读取信号量文件来拿
 	// hostIp := serviceIp[:strings.LastIndex(serviceIp, ".")] + ".1:5000"
-	hostIp := utils.GetShell("cat " + signFile + " | head -n1")
+	//hostIp := utils.GetShell("cat "+signFile+" | head -n1") + ":8500"
+	hostIp := "10.14.5.14:8500"
 	config := &consulApi.Config{
 		Address:    hostIp,
 		Scheme:     "http",

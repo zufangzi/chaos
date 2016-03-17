@@ -6,7 +6,7 @@ MAINTAINER Surlymo <surlymo@126.com>
 RUN yum -y install wget && wget http://src.ops.zufangit.cn/Scripts/yum.sh && /bin/sh yum.sh
 
 # 安装必须的软件
-RUN yum -y install dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which zlib zlib-devel pcre-devel gcc gcc-c++ ncurses-devel perl 
+RUN yum -y install dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which zlib zlib-devel pcre-devel gcc gcc-c++ ncurses-devel perl haproxy
 
 # 账号密码 & 权限 & 增加dsa和rsa的ssh-key
 # 确保能够使用sudo指定。否则可能会报sudo: sorry, you must have a tty to run sudo
@@ -26,29 +26,32 @@ RUN useradd work && echo "dingding" | passwd work --stdin \
 # 抓取consul-registrator并进行安装
 # 获取supervisor配置文件
 # 安装DNSMASQ
-RUN sudo curl -fL http://10.32.27.11/cc/pip-8.0.2.tar.gz | tar xzf - -C /home/work && sudo curl -fL http://10.32.27.11/cc/ez_setup.py | sudo python - \
+WORKDIR /home/work
+RUN sudo curl -fL http://10.32.27.11/cc/3rdparty/pip-8.0.2.tar.gz | tar xzf - -C /home/work && sudo curl -fL http://10.32.27.11/cc/3rdparty/ez_setup.py | sudo python - \
   && cd /home/work/pip-8.0.2 \
   && python setup.py install && pip install supervisor \
   && cd /home/work \
-  && wget http://10.32.27.11/cc/nginx-1.9.12.tar.gz && tar -zxvf nginx-1.9.12.tar.gz -C /home/work \
+  && wget http://10.32.27.11/cc/3rdparty/nginx-1.9.12.tar.gz && tar -zxvf nginx-1.9.12.tar.gz -C /home/work \
   && cd nginx-1.9.12  \
   && ./configure --prefix=/home/work/nginx --with-stream && make && make install \
   && echo "daemon off;" >> /home/work/nginx/conf/nginx.conf \
   && cd /home/work \
-  && wget http://10.32.27.11/cc/consul-template && chmod +x consul-template && mv consul-template /bin \ 
-  && wget http://10.32.27.11/cc/dependency.sh \ 
-  && wget http://10.32.27.11/cc/start-template.sh \
+  && wget http://10.32.27.11/cc/3rdparty/consul-template && chmod +x consul-template && mv consul-template /bin \ 
+  && wget http://10.32.27.11/cc/template/haproxy_dependency.sh \ 
+  && wget http://10.32.27.11/cc/template/start-haproxy-template.sh \
   && wget http://10.32.27.11/cc/start-dnsmasq.sh \
-  && wget http://10.32.27.11/cc/consul && chmod +x consul && mv consul /bin \ 
+  && wget http://10.32.27.11/cc/start-haproxy.sh \
+  && wget http://10.32.27.11/cc/3rdparty/consul && chmod +x consul && mv consul /bin \ 
   && wget http://10.32.27.11/cc/registrator && chmod +x registrator && mv registrator /bin \ 
-  && wget http://10.32.27.11/cc/supervisord.conf && mv supervisord.conf /etc && mkdir /home/work/log \
-  && wget http://10.32.27.11/cc/dnsmasq.conf && mv dnsmasq.conf /etc 
+  && wget http://10.32.27.11/cc/config/supervisord.conf && mv supervisord.conf /etc && mkdir /home/work/log \
+  && wget http://10.32.27.11/cc/config/dnsmasq.conf && mv dnsmasq.conf /etc \ 
+  && wget http://10.32.27.11/cc/config/haproxy.cfg && mv haproxy.cfg /etc/haproxy
 
 #安装go环境
 ENV GOROOT /home/work/go
 ENV PATH $PATH:$GOROOT/bin
 ENV GOPATH /home/work/gospace
-RUN wget http://10.32.27.11/cc/go1.5.linux-amd64.tar.gz && tar -C /home/work/ -zxf go1.5.linux-amd64.tar.gz 
+RUN wget http://10.32.27.11/cc/3rdparty/go1.5.linux-amd64.tar.gz && tar -C /home/work/ -zxf go1.5.linux-amd64.tar.gz 
   
 # 用supervisor启动sshd
 ENTRYPOINT ["/usr/bin/supervisord"]

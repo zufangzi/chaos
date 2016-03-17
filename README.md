@@ -22,14 +22,14 @@
 + supervisor 守护进程
 + consul-template 服务发现
 + registrator 服务注册
-+ nginx 路由、负载均衡
++ haproxy 路由、负载均衡
 + dnsmasq 本地dns解析，将*.service.consul域名全部解析到127.0.0.1
 
 **步骤**
 + 修改对应Dockerfile里面的IP地址为你所用的地址。
-+ 确保要部署的服务被打包成output.tar.gz,并且在解压后的根目录下带有`run.sh`和`dependency`两个文件。`dependency`代表依赖的服务，一行一个。比如访问zk的域名为zk.service.consul，则`dependency`文件中则写入**zk**。若无依赖，填入"**empty**"。`run.sh`为启动脚本。
++ 确保要部署的服务被打包成output.tar.gz,并且在解压后的根目录下带有`run.sh`和`dependency`两个文件。`dependency`代表依赖的服务，一行一个。如果是http服务如tomcat，则域名为tomcat.service.consul，`dependency`文件中写入**tomcat**；如果是tcp服务如zookeeper，则访问zk的域名为zk.service.consul:81，`dependency`文件中则写入**zk:81**(端口可自定义，不冲突即可)。若无依赖，填入"**empty**"。`run.sh`为启动脚本。
 + 每个宿主机都启动Consul Agent，其中选择3-5个作为Server节点。组成集群。
-+ 启动时候容器需要携带环境变量`$SERVICE_NAME`和`$SERVICE_PORT`。结束。至此微服务所需的负载均衡、服务发现、服务注册、路由已经都起来了。
++ 启动时候容器需要携带环境变量`$SERVICE_NAME`和`$SERVICE_PORT`或在容器Dockerfile中声明。结束。至此微服务所需的负载均衡、服务发现、服务注册、路由已经都起来了。
 
 **例外**
 待补充
@@ -47,6 +47,10 @@
 inf@zufangit.cn
 
 ## Changelog
+
+**v0.5** —— **2016-03-17**
++ 服务注册、服务发现、负载均衡、路由改为haproxy+consul+template+registrator+dnsmasq来进行。
++ 修复tcp长连接等其他bug。
 
 **v0.4** —— **2016-02-24**
 + 添加registrator。用以和consul结合，实现服务发现和服务注册

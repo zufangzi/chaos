@@ -1,5 +1,7 @@
 #Chaos
 
+注意：microservice相关的部分即将从主项目chaos中剥离。
+
 ##QuickStart
 ### 私有云平台
 + 如需要可执行程序，请执行go install opensource/chaos/server (相对于$GOPATH/src下的项目放置位置。目前开发版本放置在示例的目录下)，之后到bin目录下找到server的可执行程序双击之后。打开浏览器输入`localhost:8080`即可登录私有云平台界面。同时rest api也全部生效。

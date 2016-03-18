@@ -18,6 +18,14 @@ func GetShell(cmdStr string) string {
 	return realOut
 }
 
+func GetHostName() string {
+	return GetShell("hostname")
+}
+
+func GetHostIp() string {
+	return GetShell("hostname -ip")
+}
+
 func PortExists(servicePort string) bool {
 	cnt, _ := strconv.Atoi(GetShell("netstat -nlp | grep \":" + servicePort + "\"|wc -l"))
 	return cnt > 0

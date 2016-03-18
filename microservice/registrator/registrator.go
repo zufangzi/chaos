@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	// "fmt"
 	consulApi "github.com/hashicorp/consul/api"
 	"github.com/hashicorp/go-cleanhttp"
 	"log"
@@ -24,12 +23,14 @@ func initEnv() {
 	// 让命令行的命令生效
 	flag.Parse()
 	// 初始化一些初始变量
-	serviceIp = utils.GetShell("hostname -i")
+	serviceIp = utils.GetHostIp()
 	serviceName = os.Getenv("SERVICE_NAME")
 	utils.Assert(serviceName)
 	servicePort = os.Getenv("SERVICE_PORT")
 	utils.Assert(servicePort)
-	serviceId = strconv.FormatInt(time.Now().Unix(), 10) + "_" + serviceName
+	// 直接以容器ID + ServiceName来命名，确保唯一。如果后续发现容器ID不唯一，那么就再加上宿主机IP
+	// serviceId = strconv.FormatInt(time.Now().Unix(), 10) + "_" + serviceName
+	serviceId = utils.GetHostName() + "_" + serviceName
 	signFile = "/home/work/kickoff_sign_file"
 	isNormal = false
 
@@ -41,8 +42,8 @@ func defaultConfig() *consulApi.Config {
 	// 拿ip最后一位设置为1，即为宿主机ip。默认宿主机上必须有consul
 	// Deprecated。采用OVS+none划分VLAN的方式重做二层网络。采用读取信号量文件来拿
 	// hostIp := serviceIp[:strings.LastIndex(serviceIp, ".")] + ".1:5000"
-	//hostIp := utils.GetShell("cat "+signFile+" | head -n1") + ":8500"
-	hostIp := "10.14.5.14:8500"
+	hostIp := utils.GetShell("cat "+signFile+" | head -n1") + ":8500"
+	// hostIp := "10.14.5.14:8500"
 	config := &consulApi.Config{
 		Address:    hostIp,
 		Scheme:     "http",

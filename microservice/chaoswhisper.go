@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	dockerapi "github.com/fsouza/go-dockerclient"
 	consulApi "github.com/hashicorp/consul/api"
 	"github.com/hashicorp/go-cleanhttp"
@@ -33,11 +32,7 @@ func main() {
 	consulClient, _ = consulApi.NewClient(defaultConfig())
 
 	for msg := range events {
-		fmt.Println(msg.Status)
-		fmt.Println(msg.ID)
-		fmt.Println(msg)
-		fmt.Println("=================")
-
+		log.Printf("get docker event: %s now... \n", msg)
 		cnt, _ := strconv.Atoi(utils.GetShell("docker inspect " + msg.ID + " | grep Name | grep mesos | wc -l"))
 		if cnt == 0 {
 			continue
@@ -53,6 +48,7 @@ func main() {
 	}
 
 	log.Fatalln("Docker listener closed!")
+	// TODO 需要一个守护进程。定时扫有没有忘了删除的服务
 
 }
 

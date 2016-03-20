@@ -49,7 +49,14 @@ func main() {
 
 	log.Fatalln("Docker listener closed!")
 	// TODO 需要一个守护进程。定时扫有没有忘了删除的服务
-
+	// 此处的逻辑为： 扫所有consul注册的服务，获取虚拟IP，进一步扫本机所有的容器，
+	// 去进行一一比对。如果本机容器Name带有"mesos"字样，ip在上面存活的，且PID=0的，
+	// 则认为服务已经停止，此时删除consul上的节点数据。
+	// ------ 以上为删除已被停止的容器服务注册信息 -------
+	// 每个宿主机上各自定时扫描汇报给cloud-server自己机器上的所有存活节点。
+	// 由cloud-server抓取consul-server进行比对。取出不存在列表中的consul服务信息，
+	// 再等待下一次比对。如果下一次比对仍然没有，则判定为不存在。此时进行删除。
+	// ------ 以上为删除已不存在的容器服务注册信息 -------
 }
 
 func startProcessor(msg *dockerapi.APIEvents) {
@@ -57,7 +64,7 @@ func startProcessor(msg *dockerapi.APIEvents) {
 	log.Println("Step1: begin to process the container network")
 	utils.GetShell("sh " + START_SCRIPT + " " + msg.ID)
 	log.Println("Step2: begin to process log collection")
-	// TODO
+	// TODO 处理logstash、kafka topic相关脚本
 }
 
 func stopProcessor(msg *dockerapi.APIEvents) {

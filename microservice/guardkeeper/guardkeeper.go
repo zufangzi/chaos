@@ -29,7 +29,7 @@ func main() {
 	for {
 		if !utils.FileExists(signPath, signFile) {
 			log.Println("[GUARDKEEPER]sign file not found yet, please wait...")
-			time.Sleep(time.Duration(*monitorInterval) * time.Millisecond)
+			time.Sleep(time.Duration(*monitorInterval) * time.Second)
 			continue
 		}
 		log.Println("[GUARDKEEPER]found the sign file!")

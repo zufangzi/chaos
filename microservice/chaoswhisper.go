@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/go-cleanhttp"
 	"log"
 	"opensource/chaos/microservice/utils"
+	// "opensource/chaos/server/utils/fasthttp"
 	"os"
 	"strconv"
 	"strings"
@@ -90,8 +91,18 @@ func destroyProcessor(msg *dockerapi.APIEvents) {
 	// TODO
 }
 
-// Deprecated because of die maybe will followed with destroy so that 'inspect' command will be not allowed
 func globalDeregister(msg *dockerapi.APIEvents) {
+	// var request dto.DeployAppsRequest
+	// utils.ParseOuterRequest(data, &request)
+	// deployInfo := utils.BuildAppsRequest(request)
+	// var resData map[string]interface{}
+	// resCode := fasthttp.JsonReqAndResHandler(utils.Path.MarathonAppsUrl, deployInfo, &resData, "POST")
+	// return utils.ProcessResponse(resCode, resData)
+}
+
+// Deprecated because of die maybe will followed with destroy so that 'inspect' command will be not allowed
+// 逻辑改为，只要包含容器ID。就可以删掉。
+func globalDeregisterOld(msg *dockerapi.APIEvents) {
 	deregisterEnv := utils.GetShell("docker inspect -f '{{.Config.Env}}' " + msg.ID)
 	output := strings.Split(deregisterEnv, " ")
 	var deregisterServiceName string

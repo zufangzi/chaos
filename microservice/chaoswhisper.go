@@ -11,11 +11,11 @@ import (
 	"strings"
 )
 
-var SCRIPT_HOME = "/usr/local/script/"
-var START_SCRIPT = SCRIPT_HOME + "cnet-start.sh"
+var SCRIPT_HOME = "/usr/local/scripts/"
+var START_SCRIPT = SCRIPT_HOME + "docker-cnet-start.sh"
 var START_LOG_CLT_SCRIPT = SCRIPT_HOME + "logstash-start.sh"
-var STOP_SCRIPT = SCRIPT_HOME + "cnet-stop.sh"
-var DELETE_SCRIPT = SCRIPT_HOME + "cnet-delete.sh"
+var STOP_SCRIPT = SCRIPT_HOME + "docker-cnet-stop.sh"
+var DELETE_SCRIPT = SCRIPT_HOME + "docker-cnet-delete.sh"
 
 var consulClient *consulApi.Client
 
@@ -33,15 +33,20 @@ func main() {
 
 	for msg := range events {
 		log.Printf("get docker event: %s now... \n", msg)
-		cnt, _ := strconv.Atoi(utils.GetShell("docker inspect " + msg.ID + " | grep Name | grep mesos | wc -l"))
-		if cnt == 0 {
-			continue
+
+		// 不能用inspect了。都改成自己本地或者远程存储。
+		if msg.Status != "destroy" {
+			cnt, _ := strconv.Atoi(utils.GetShell("docker inspect " + msg.ID + " | grep Name | grep mesos | wc -l"))
+			if cnt == 0 {
+				continue
+			}
 		}
+
 		switch msg.Status {
 		case "start":
 			go startProcessor(msg)
-		case "stop":
-			go stopProcessor(msg)
+		case "die":
+			go dieProcessor(msg)
 		case "destroy":
 			go destroyProcessor(msg)
 		}
@@ -60,33 +65,33 @@ func main() {
 }
 
 func startProcessor(msg *dockerapi.APIEvents) {
-	log.Println("now found a CREAT event!")
+	log.Println("now found a START event!")
 	log.Println("Step1: begin to process the container network")
-	utils.GetShell("sh " + START_SCRIPT + " " + msg.ID)
+	utils.GetShell("sh " + START_SCRIPT + " " + getHostname(msg.ID, false))
 	log.Println("Step2: begin to process log collection")
 	// TODO 处理logstash、kafka topic相关脚本
 }
 
-func stopProcessor(msg *dockerapi.APIEvents) {
-	log.Println("now found a STOP event! ")
+func dieProcessor(msg *dockerapi.APIEvents) {
+	log.Println("now found a DIE event! ")
 	log.Println("Step1: begin to clear link")
-	utils.GetShell("sh " + STOP_SCRIPT + " " + msg.ID)
+	log.Println("sh " + STOP_SCRIPT + " " + getHostname(msg.ID, true))
+	utils.GetShell("sh " + STOP_SCRIPT + " " + getHostname(msg.ID, true))
 	log.Println("Step2: begin to process log collection")
 	// TODO
-	globalDeregister(msg)
+	// globalDeregister(msg)
 }
 
 func destroyProcessor(msg *dockerapi.APIEvents) {
 	log.Println("now found a DESTROY event! ")
 	log.Println("Step1: begin to clear up all info abt this container")
-	utils.GetShell("sh " + DELETE_SCRIPT + " " + msg.ID)
+	utils.GetShell("sh " + DELETE_SCRIPT + " " + getHostname(msg.ID, true))
 	log.Println("Step2: begin to process log collection")
 	// TODO
-	globalDeregister(msg)
 }
 
+// Deprecated because of die maybe will followed with destroy so that 'inspect' command will be not allowed
 func globalDeregister(msg *dockerapi.APIEvents) {
-	deregisterHostName := utils.GetShell("docker inspect -f '{{.Config.Hostname}}' " + msg.ID)
 	deregisterEnv := utils.GetShell("docker inspect -f '{{.Config.Env}}' " + msg.ID)
 	output := strings.Split(deregisterEnv, " ")
 	var deregisterServiceName string
@@ -97,7 +102,7 @@ func globalDeregister(msg *dockerapi.APIEvents) {
 		deregisterServiceName = strings.Split(data, "=")[1]
 		break
 	}
-	serviceId := deregisterHostName + "_" + deregisterServiceName
+	serviceId := getHostname(msg.ID, true) + "_" + deregisterServiceName
 	consulClient.Agent().ServiceDeregister(serviceId)
 	log.Printf("consul info clear up. serviceId: %s", serviceId)
 }
@@ -110,6 +115,16 @@ func defaultConfig() *consulApi.Config {
 		HttpClient: cleanhttp.DefaultClient(),
 	}
 	return config
+}
+
+// 需要被替代。不能用inspect
+func getHostname(id string, byFullId bool) string {
+	if !byFullId {
+		return utils.GetShell("docker inspect -f {{.Config.Hostname}} " + id)
+	} else {
+		return id[:12] // 这边考虑到了destroy的话就没有hostname了，这时候就通过id进行分割获取。
+	}
+
 }
 
 func assert(err error) {

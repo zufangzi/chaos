@@ -13,9 +13,14 @@ func GetShell(cmdStr string) string {
 	if err != nil {
 		panic(errors.New("error occur while process shell cmd"))
 	}
+	if out == nil {
+		return ""
+	}
 	cleanOut := string(out)
-	realOut := cleanOut[0:strings.Index(cleanOut, "\n")]
-	return realOut
+	if strings.Contains(cleanOut, "\n") {
+		return cleanOut[0:strings.Index(cleanOut, "\n")]
+	}
+	return cleanOut
 }
 
 func GetHostName() string {

@@ -1,8 +1,0 @@
-第三方文件需要：
-1. consul
-2. consul-template
-3. ez_setup.py
-4. go1.5.linux-amd64.tar.gz
-5. nginx-1.9.12.tar.gz
-6. pip-8.0.2.tar.gz
-此处由于文件大小限制不上传。后续会开放对外路径供下载

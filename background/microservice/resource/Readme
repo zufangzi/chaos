@@ -1,0 +1,2 @@
+该目录用以提供各种wget场景所需要的文件。注意还需要在该目录下放置最新的registrator和guardkeeper。
+前程序中wget的基础路径为10.32.27.11:/data/cc/preonline。可以搭建一个nginx做反向代理来配合wget

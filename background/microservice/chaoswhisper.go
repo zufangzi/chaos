@@ -67,11 +67,11 @@ func main() {
 
 func startProcessor(msg *dockerapi.APIEvents) {
 	log.Println("now found a START event!")
-	log.Println("Step1: begin to process the container network")
 	cnt, _ := strconv.Atoi(utils.GetShell("docker inspect " + msg.ID + " | grep SERVICE_NAME | wc -l"))
 	if cnt == 0 {
 		return
 	}
+	log.Println("Step1: begin to process the container network")
 	utils.GetShell("sh " + SCRIPT_HOME + START_SCRIPT + " " + getHostname(msg.ID, false))
 	log.Println("Step2: begin to process log collection")
 	// TODO 处理logstash、kafka topic相关脚本
@@ -107,7 +107,8 @@ func globalDeregister(msg *dockerapi.APIEvents) bool {
 		}
 		serviceId := getHostname(msg.ID, true)
 		if strings.Split(key, "_")[0] == serviceId {
-			consulClient.Agent().ServiceDeregister(serviceId)
+			log.Println("found serviceId: " + key)
+			consulClient.Agent().ServiceDeregister(key)
 			return true
 		}
 	}

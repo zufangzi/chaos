@@ -99,8 +99,3 @@ func DeleteAppsHandler(pathParams map[string]string, data []byte) interface{} {
 	resCode := fasthttp.JsonReqAndResHandler(utils.Path.MarathonAppsUrl+"/"+appId, nil, &resData, "DELETE")
 	return webUtils.ProcessResponse(resCode, resData)
 }
-
-// 对服务的每个实例的镜像，都自动添加consul-template、consul-register以及haproxy
-func Fix() {
-
-}

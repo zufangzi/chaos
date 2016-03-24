@@ -88,15 +88,16 @@ global
     pidfile /home/work/haproxy.pid
     stats socket /var/run/haproxy.stat mode 666  	
 
+# TODO：timeout threshold should be change by case.
 defaults
     log    global
     option    dontlognull
     retries    3
     option redispatch
     maxconn 2000
-    timeout connect 5000ms
-    timeout client 30000ms
-    timeout server 30000ms
+    timeout connect 1d
+    timeout client 1d
+    timeout server 1d
 
 EOF
 

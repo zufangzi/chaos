@@ -20,6 +20,7 @@ func JsonReqAndResHandler(url string, req interface{}, res interface{}, reqType 
 		// log.Println("now in DEFAUTL swtich case...")
 	}
 	client := &http.Client{}
+	log.Println(url)
 	request, err := http.NewRequest(reqType, url, bodyBuffer)
 	request.Header.Set("Content-Type", "application/json")
 	CheckError(err)

@@ -1,4 +1,4 @@
-package dto
+package feo
 
 // 部署一个或者多个apps的请求
 type DeployAppsBatchRequest struct {

@@ -1,15 +1,15 @@
 package handler
 
 import (
-	"opensource/chaos/background/server/dto"
-	"opensource/chaos/background/server/dto/marathon"
+	"opensource/chaos/background/server/dto/feo"
+	"opensource/chaos/background/server/dto/sao/marathon"
 	webUtils "opensource/chaos/background/server/utils"
 	"opensource/chaos/background/utils"
 	"opensource/chaos/background/utils/fasthttp"
 )
 
 func DeployGroupsHandler(pathParams map[string]string, data []byte) interface{} {
-	var request dto.DeployGroupsRequest
+	var request feo.DeployGroupsRequest
 	webUtils.ParseOuterRequest(data, &request)
 
 	var groupsRequest marathon.MarathonGroupsRequest

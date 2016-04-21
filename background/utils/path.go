@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/tjz101/goprop"
+	"log"
 	"os"
 )
 
@@ -16,9 +17,11 @@ type PathProps struct {
 }
 
 func init() {
+	log.Println("hi iam now in path...")
 	if os.Getenv("GOPATH") == "" {
 		return
 	}
+	log.Println("hi iam now in path2...")
 	Path = PathProps{}
 	prop := goprop.NewProp()
 	prop.Read(os.Getenv("GOPATH") + PROP_FILE)
@@ -26,4 +29,5 @@ func init() {
 	Path.MarathonGroupsUrl = prop.Get("marathon.groups.url")
 	Path.DockerRegistryUrl = prop.Get("docker.registry.url")
 	Path.DockerRegistrySearchUrl = Path.DockerRegistryUrl + prop.Get("docker.registry.search.url")
+	log.Println("hi iam now in path3...", Path.DockerRegistryUrl)
 }

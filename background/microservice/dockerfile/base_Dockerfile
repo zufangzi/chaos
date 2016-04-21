@@ -6,7 +6,7 @@ MAINTAINER Surlymo <surlymo@126.com>
 RUN yum -y install wget && wget http://src.ops.zufangit.cn/Scripts/yum.sh && /bin/sh yum.sh
 
 # 安装必须的软件
-RUN yum -y install dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which zlib zlib-devel pcre-devel gcc gcc-c++ ncurses-devel perl haproxy
+RUN yum -y install vim dnsmasq.x86_64 telnet lrzsz.x86_64 sudo-devel.x86_64 java-1.7.0-openjdk-devel.x86_64 openssh-clients.x86_64 openssh-server.x86_64 openssh.x86_64 passwd.x86_64 tar.x86_64 unzip.x86_64 zip.x86_64 which zlib zlib-devel pcre-devel gcc gcc-c++ ncurses-devel perl haproxy
 
 # 账号密码 & 权限 & 增加dsa和rsa的ssh-key
 # 确保能够使用sudo指定。否则可能会报sudo: sorry, you must have a tty to run sudo

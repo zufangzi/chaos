@@ -6,9 +6,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"opensource/chaos/background/server/dto"
+	"opensource/chaos/background/server/dto/feo"
 	"opensource/chaos/background/server/handler"
 	webUtils "opensource/chaos/background/server/utils"
+	"runtime/debug"
 )
 
 func Route() (rest.App, error) {
@@ -37,13 +38,14 @@ func restGuarder(method RestFunc) rest.HandlerFunc {
 		defer func() {
 			if e, ok := recover().(error); ok {
 				rest.Error(w, e.Error(), http.StatusInternalServerError)
-				log.Println("catchable system error occur: ", e)
+				log.Println("catchable system error occur: ", e.Error())
+				debug.PrintStack()
 			}
 			// log.Printf("the request: %s cost: %d ms\n", r.URL.RequestURI(), ((time.Now().UnixNano() - begin) / 1000000))
 		}()
 
 		pathParams := r.PathParams
-		var request dto.CommonRequest
+		var request feo.CommonRequest
 		content, err := ioutil.ReadAll(r.Body)
 		defer r.Body.Close()
 		webUtils.CheckError(err)

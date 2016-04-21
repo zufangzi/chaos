@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 	"github.com/samalba/dockerclient"
-	"opensource/chaos/background/server/dto/docker"
+	"opensource/chaos/background/server/dto/sao/docker"
 	"opensource/chaos/background/utils/fasthttp"
 	"sort"
 	"strconv"
@@ -30,12 +30,9 @@ func (f *FastDocker) GetImageAndTagByFreshness(repository string, version string
 	if version != "" {
 		return sweepHttpPrefix(Path.DockerRegistryUrl+"/"+repository+":"+version, needHttpPrefix)
 	}
-
 	uri := fmt.Sprintf(Path.DockerRegistrySearchUrl, repository)
 	var res docker.DockerRegistryTagsResponse
-
 	fasthttp.JsonReqAndResHandler(uri, nil, &res, "GET")
-
 	if tagStyle == "" {
 		tagStyle = IMAGES_TAG_STYLE_SIMPLE
 	}
@@ -62,5 +59,6 @@ func sweepHttpPrefix(fullImage string, needHttpPrefix bool) (string, string, str
 
 	tag := cutFullImage[strings.LastIndex(cutFullImage, ":")+1:]
 	image := cutFullImage[:strings.LastIndex(cutFullImage, ":")]
+	fmt.Printf("fullImage: %s, image: %s, tag: %s", fullImage, image, tag)
 	return fullImage, image, tag
 }

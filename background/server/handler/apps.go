@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"fmt"
+	// "fmt"
+	// "log"
 	"net/http"
-	"opensource/chaos/background/server/dto"
-	"opensource/chaos/background/server/dto/marathon"
+	"opensource/chaos/background/server/dto/feo"
+	"opensource/chaos/background/server/dto/sao/marathon"
 	"opensource/chaos/background/server/handler/service"
 	webUtils "opensource/chaos/background/server/utils"
 	"opensource/chaos/background/utils"
@@ -17,28 +18,27 @@ import (
 // 则后端则从私库里捞出zookeeper所有模块，并按时间倒叙取出最新的zk模块镜像进行部署
 // 则，在回滚时候，捞出倒数第二新的模块进行重新部署。部署时候更新labels即可。
 func RollbackAppsHandler(pathParams map[string]string, data []byte) interface{} {
-	var request dto.RollbackAppsBatchRequest
+	var request feo.RollbackAppsBatchRequest
 	webUtils.ParseOuterRequest(data, &request)
 
-	requestBatch := make([]dto.DeployAppsRequest, len(request.Batch))
+	requestBatch := make([]feo.DeployAppsRequest, len(request.Batch))
 	for i, v := range request.Batch {
 		// TODO 通过ID把Image信息拿到，暂时认为ID和Image是等价的
 		_, image, tag := utils.DockerClient.GetPreviousImageAndTag(v.Id, v.Version, "")
-		var request dto.DeployAppsRequest
+		var request feo.DeployAppsRequest
 		request.Id = v.Id
 		request.Image = image
 		request.Version = tag
 		requestBatch[i] = request
 	}
-	appsBatchRequest := dto.DeployAppsBatchRequest{}
+	appsBatchRequest := feo.DeployAppsBatchRequest{}
 	appsBatchRequest.Batch = requestBatch
 	resData, code := service.CreateOrUpdateAppsService(appsBatchRequest)
 	return webUtils.ProcessResponse(code, resData)
 }
 
 func CreateAppsHandler(pathParams map[string]string, data []byte) interface{} {
-	fmt.Println("hello......")
-	var request dto.DeployAppsRequest
+	var request feo.DeployAppsRequest
 	webUtils.ParseOuterRequest(data, &request)
 	deployInfo := webUtils.BuildAppsRequest(request)
 	var resData map[string]interface{}
@@ -47,7 +47,7 @@ func CreateAppsHandler(pathParams map[string]string, data []byte) interface{} {
 }
 
 func CreateOrUpdateAppsHandler(pathParams map[string]string, data []byte) interface{} {
-	var request dto.DeployAppsBatchRequest
+	var request feo.DeployAppsBatchRequest
 	webUtils.ParseOuterRequest(data, &request)
 	resData, resCode := service.CreateOrUpdateAppsService(request)
 	return webUtils.ProcessResponse(resCode, resData)
@@ -59,10 +59,10 @@ func GetInfoAppsHandler(pathParams map[string]string, data []byte) interface{} {
 	appsCnt := len(marathonApps.Apps)
 
 	// should not code like this: appsGlobalInfos := [appsCnt]entity.AppsGlobalInfo{}
-	appsGlobalInfos := make([]dto.AppsGlobalInfoResponse, appsCnt)
+	appsGlobalInfos := make([]feo.AppsGlobalInfoResponse, appsCnt)
 
 	for i, v := range marathonApps.Apps {
-		var perApp dto.AppsGlobalInfoResponse
+		var perApp feo.AppsGlobalInfoResponse
 		if strings.LastIndex(v.Id, "/") == -1 {
 			perApp.Id = v.Id
 		} else {

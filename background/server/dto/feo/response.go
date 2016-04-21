@@ -1,5 +1,5 @@
 // TODO 对于response需要进行struct的统一。code/message/data
-package dto
+package feo
 
 type AppsGlobalInfoResponse struct {
 	Id               string

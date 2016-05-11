@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"opensource/chaos/background/server/domain"
 	webUtils "opensource/chaos/background/server/utils"
 	"opensource/chaos/background/utils"
 	"os"
@@ -34,7 +35,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static", fileServer))
 	http.Handle("/api/", http.StripPrefix("/api", api.MakeHandler()))
 	http.ListenAndServe(":8080", nil)
-
+	domain.Close()
 }
 
 func entranceGuarder(method http.HandlerFunc) http.HandlerFunc {

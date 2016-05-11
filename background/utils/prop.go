@@ -2,26 +2,39 @@ package utils
 
 import (
 	"github.com/tjz101/goprop"
-	"log"
+	// "log"
 	"os"
 )
 
 // global var
 var Path PathProps
+var Param ParamProps
 
 type PathProps struct {
-	MarathonAppsUrl         string
-	MarathonGroupsUrl       string
+
+	// marathon
+	MarathonAppsUrl   string
+	MarathonGroupsUrl string
+
+	// docker registry
 	DockerRegistryUrl       string
 	DockerRegistrySearchUrl string
+
+	// mongo
+	MongoUrl string
+
+	// redis
+	RedisUrl string
+}
+
+type ParamProps struct {
+	MongoDB string
 }
 
 func init() {
-	log.Println("hi iam now in path...")
 	if os.Getenv("GOPATH") == "" {
 		return
 	}
-	log.Println("hi iam now in path2...")
 	Path = PathProps{}
 	prop := goprop.NewProp()
 	prop.Read(os.Getenv("GOPATH") + PROP_FILE)
@@ -29,5 +42,8 @@ func init() {
 	Path.MarathonGroupsUrl = prop.Get("marathon.groups.url")
 	Path.DockerRegistryUrl = prop.Get("docker.registry.url")
 	Path.DockerRegistrySearchUrl = Path.DockerRegistryUrl + prop.Get("docker.registry.search.url")
-	log.Println("hi iam now in path3...", Path.DockerRegistryUrl)
+	Path.MongoUrl = prop.Get("mongo.url")
+	Path.RedisUrl = prop.Get("redis.url")
+
+	Param.MongoDB = prop.Get("mongo.db")
 }

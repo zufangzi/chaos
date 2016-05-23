@@ -3,7 +3,7 @@ package utils
 import (
 	"github.com/tjz101/goprop"
 	// "log"
-	"os"
+	// "os"
 )
 
 // global var
@@ -25,25 +25,33 @@ type PathProps struct {
 
 	// redis
 	RedisUrl string
+
+	// cloud server
+	CloudServerUrl         string
+	CloudServerIpholderUrl string
 }
 
 type ParamProps struct {
 	MongoDB string
 }
 
-func init() {
-	if os.Getenv("GOPATH") == "" {
-		return
-	}
+func InitArgs(propPath string) {
+	// if os.Getenv("GOPATH") == "" {
+	// 	return
+	// }
 	Path = PathProps{}
 	prop := goprop.NewProp()
-	prop.Read(os.Getenv("GOPATH") + PROP_FILE)
+	prop.Read(propPath)
+	// prop.Read(os.Getenv("GOPATH") + PROP_FILE)
 	Path.MarathonAppsUrl = prop.Get("marathon.apps.url")
 	Path.MarathonGroupsUrl = prop.Get("marathon.groups.url")
 	Path.DockerRegistryUrl = prop.Get("docker.registry.url")
 	Path.DockerRegistrySearchUrl = Path.DockerRegistryUrl + prop.Get("docker.registry.search.url")
 	Path.MongoUrl = prop.Get("mongo.url")
+	Path.CloudServerUrl = prop.Get("cloud.server.url")
+	Path.CloudServerIpholderUrl = Path.CloudServerUrl + prop.Get("cloud.server.ipholder.url")
 	Path.RedisUrl = prop.Get("redis.url")
 
 	Param.MongoDB = prop.Get("mongo.db")
+
 }

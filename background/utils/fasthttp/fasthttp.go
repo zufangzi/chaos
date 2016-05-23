@@ -11,14 +11,17 @@ import (
 
 func JsonReqAndResHandler(url string, req interface{}, res interface{}, reqType string) (code int) {
 	var bodyBuffer io.Reader
-	switch reqType {
-	case "POST":
-		bodyBuffer = getBufferReader(req)
-	case "PUT":
-		bodyBuffer = getBufferReader(req)
-	default:
-		// log.Println("now in DEFAUTL swtich case...")
+	if req != nil {
+		switch reqType {
+		case "POST":
+			bodyBuffer = getBufferReader(req)
+		case "PUT":
+			bodyBuffer = getBufferReader(req)
+		default:
+			// log.Println("now in DEFAUTL swtich case...")
+		}
 	}
+
 	client := &http.Client{}
 	log.Println(url)
 	request, err := http.NewRequest(reqType, url, bodyBuffer)

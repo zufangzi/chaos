@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"log"
-	"net/http"
+	// "net/http"
 	"opensource/chaos/background/server/dto/feo"
 	"opensource/chaos/background/server/dto/sao/marathon"
 	"opensource/chaos/background/utils"
@@ -69,19 +69,19 @@ func AddDefaultPorts() *marathon.MarathonDockerPort {
 }
 
 func ProcessResponse(code int, response interface{}) interface{} {
-	return ProcessResponseFully(code, response, true)
+	return ProcessResponseFully(code, response, false)
 }
 
 func ProcessResponseFully(code int, response interface{}, shouldHideSuccessInfo bool) interface{} {
 
-	if !shouldHideSuccessInfo {
-		return response
+	if shouldHideSuccessInfo {
+		return map[string]interface{}{
+			"status": code,
+		}
 	}
-
-	if code != http.StatusCreated && code != http.StatusOK && code != http.StatusAccepted {
-		return response
-	} else {
-		return map[string]string{"status": "ok"}
+	return map[string]interface{}{
+		"status": code,
+		"data":   response,
 	}
 }
 

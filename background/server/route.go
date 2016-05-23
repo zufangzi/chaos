@@ -29,6 +29,18 @@ func Route() (rest.App, error) {
 		rest.Post("/apps/rollback", restGuarder(handler.RollbackAppsHandler)),
 		// 新增一批组信息
 		rest.Post("/groups", restGuarder(handler.DeployGroupsHandler)),
+
+		// 给新增容器获取一个IP
+		rest.Get("/ipholder/*cId", restGuarder(handler.CreateIpForContainer)),
+		// 给删除容器释放所占用的IP
+		rest.Delete("/ipholder/*cId", restGuarder(handler.DeleteIpForContainer)),
+
+		// 填写某个容器信息
+		rest.Post("/containers", restGuarder(handler.CreateContainerInfo)),
+		// 更新容器状态
+		rest.Post("/containers/*cId", restGuarder(handler.UpdateStateContainerInfo)),
+		// 软删除容器
+		rest.Delete("/containers/soft/*cId", restGuarder(handler.MaskContainerInfo)),
 	)
 }
 

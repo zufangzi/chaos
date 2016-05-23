@@ -5,18 +5,20 @@ import (
 )
 
 const (
-	CONTAINER_STATE_WAIT_FOR_SERVICE = itoa
+	CONTAINER_STATE_WAIT_FOR_SERVICE = iota
+	CONTAINER_STATE_STARTED
 	CONTAINER_STATE_ALL_UP
 	CONTAINER_STATE_ERROR
+	CONTAINER_STATE_DELETE
 )
 
 const (
-	SERVICE_STATE_HEALTHY = itoa
+	SERVICE_STATE_HEALTHY = iota
 	SERVICE_STATE_UNHEALTHY
 )
 
 const (
-	GROUP_TYPE_ONLINE = itoa
+	GROUP_TYPE_ONLINE = iota
 	GROUP_TYPE_PRE_TEST
 	GROUP_TYPE_TEST
 	GROUP_TYPE_VM
@@ -24,12 +26,10 @@ const (
 )
 
 const (
-	GROUP_STATE_DEPLOYING = itoa
+	GROUP_STATE_DEPLOYING = iota
 	GROUP_STATE_FAIL
 	GROUP_STATE_NORMAL
 )
-
-const itoa = 0
 
 // 不能用组合方式来做，mongo那边做insert和query时候会
 // 错乱，将mongo字段带入作为根
@@ -67,4 +67,11 @@ type Group struct {
 	BizName    string
 	ServiceCnt int
 	Type       int
+}
+
+type Host struct {
+	State    int
+	HostIp   string
+	Vlan     string
+	NameNode bool
 }

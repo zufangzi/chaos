@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/ant0ine/go-json-rest/rest"
 	"html/template"
@@ -8,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"opensource/chaos/background/server/domain"
+	"opensource/chaos/background/server/domain/mongo"
+	"opensource/chaos/background/server/domain/redis"
 	webUtils "opensource/chaos/background/server/utils"
 	"opensource/chaos/background/utils"
 	"os"
@@ -19,18 +22,18 @@ import (
 // templates := make(map[string]*template.Template) will occur "non-declaration statement outside function body" error
 var templates = make(map[string]*template.Template)
 
-func init() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-}
+var ARGS_STATIC_FILE_URL = flag.String("static", os.Getenv("GOPATH")+utils.STATIC_DIR, "Static files address")
+var ARGS_PROPERTIES_URL = flag.String("prop", os.Getenv("GOPATH")+utils.PROP_FILE, "Properties files address")
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	fmt.Println("now begin to run server, please wait...")
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	route, _ := Route()
 	api.SetApp(route)
 
-	fileServer := http.FileServer(http.Dir(os.Getenv("GOPATH") + utils.STATIC_DIR))
+	fileServer := http.FileServer(http.Dir(*ARGS_STATIC_FILE_URL))
 	http.HandleFunc("/", entranceGuarder(indexHandler))
 	http.Handle("/static/", http.StripPrefix("/static", fileServer))
 	http.Handle("/api/", http.StripPrefix("/api", api.MakeHandler()))
@@ -64,7 +67,12 @@ func renderPage(w http.ResponseWriter, tmpl string, values map[string]interface{
 }
 
 func init() {
-	htmlPath := os.Getenv("GOPATH") + utils.STATIC_DIR + string(os.PathSeparator) + utils.TMPL_NAME + string(os.PathSeparator)
+	flag.Parse()
+	utils.InitArgs(*ARGS_PROPERTIES_URL)
+	mongo.MongoInit()
+	redis.RedisInit()
+
+	htmlPath := *ARGS_STATIC_FILE_URL + string(os.PathSeparator) + utils.TMPL_NAME + string(os.PathSeparator)
 	fileInfoArray, err := ioutil.ReadDir(htmlPath)
 	webUtils.CheckError(err)
 	var fileName, filePath string

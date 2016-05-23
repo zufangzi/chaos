@@ -5,6 +5,7 @@ import (
 	"log"
 	"opensource/chaos/background/utils"
 	"reflect"
+	"runtime/debug"
 )
 
 var c *redis.Conn
@@ -13,7 +14,7 @@ var MAX_POOL_SIZE = 20
 var redisPoll chan redis.Conn
 var redisServer string
 
-func init() {
+func RedisInit() {
 	redisServer = utils.Path.RedisUrl
 }
 
@@ -43,6 +44,7 @@ func GetRedisConn(network, address string) redis.Conn {
 			}
 		}()
 	}
+	// 可能会造成阻塞？
 	return <-redisPoll
 }
 
@@ -52,6 +54,7 @@ func Safe(f func(redis.Conn)) {
 		putRedis(c)
 		if e, ok := recover().(error); ok {
 			log.Println("catchable redis error occur. " + e.Error())
+			debug.PrintStack()
 		}
 	}()
 	f(c)
@@ -87,6 +90,17 @@ func Lpush(queue string, value ...string) bool {
 		ok, err := redis.Bool(rst[0].Interface().(int64), nil)
 		utils.AssertPrint(err)
 		result = ok
+	})
+	return result
+}
+
+func Rpop(queue string) string {
+	var result string
+	Safe(func(c redis.Conn) {
+		rst := simpleMultiArgsCmd(c, "RPOP", queue)
+		data, err := redis.String(rst[0].Interface(), nil)
+		utils.AssertPrint(err)
+		result = data
 	})
 	return result
 }

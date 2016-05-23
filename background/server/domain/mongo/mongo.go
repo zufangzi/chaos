@@ -9,6 +9,7 @@ import (
 	"opensource/chaos/background/server/dto/model"
 	"opensource/chaos/background/utils"
 	"reflect"
+	"runtime/debug"
 	"strings"
 )
 
@@ -19,12 +20,11 @@ func MongoClose() {
 	defer session.Close()
 }
 
-func init() {
+func MongoInit() {
 	var err error
 	db = utils.Param.MongoDB
 	session, err = mgo.Dial(utils.Path.MongoUrl)
 	utils.AssertPanic(err)
-	//作用？
 	session.SetMode(mgo.Monotonic, true)
 }
 
@@ -75,7 +75,8 @@ func Safe(collection string, f func(*mgo.Collection)) {
 	defer func() {
 		s.Close()
 		if e, ok := recover().(error); ok {
-			log.Println("catchable mongo error occur. " + e.Error())
+			log.Println("[CHAOS]catchable mongo error occur. " + e.Error())
+			debug.PrintStack()
 		}
 	}()
 	c := s.DB(db).C(collection)
@@ -86,7 +87,7 @@ func query(collection string, result interface{}, condition model.Mongo) {
 	Safe(collection, func(c *mgo.Collection) {
 		bsonMap := Reflect(condition)
 		err := c.Find(&bsonMap).One(result)
-		utils.AssertPanic(err)
+		utils.AssertPrint(err)
 		b, _ := json.Marshal(result)
 		fmt.Println("[CHAOS]query result is: ", string(b))
 	})
@@ -96,8 +97,21 @@ func queryById(collection string, result interface{}, id string) {
 	condition := model.Mongo{}
 	condition.BizId = id
 	query(collection, result, condition)
-	b, _ := json.Marshal(result)
-	fmt.Println("[CHAOS]queryById result is: ", string(b))
+}
+
+func update(collection string, condition model.Mongo, docs interface{}) {
+	Safe(collection, func(c *mgo.Collection) {
+		b, _ := json.Marshal(docs)
+		fmt.Println("[CHAOS]update data is: ", string(b))
+		err := c.Update(Reflect(condition), bson.M{"$set": docs})
+		utils.AssertPrint(err)
+	})
+}
+
+func updateById(collection string, data interface{}, id string) {
+	condition := model.Mongo{}
+	condition.BizId = id
+	update(collection, condition, data)
 }
 
 func insert(collection string, docs interface{}) {

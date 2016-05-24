@@ -38,7 +38,7 @@ func Route() (rest.App, error) {
 		// 填写某个容器信息
 		rest.Post("/containers", restGuarder(handler.CreateContainerInfo)),
 		// 更新容器状态
-		rest.Post("/containers/*cId", restGuarder(handler.UpdateStateContainerInfo)),
+		rest.Post("/containers/:cId/:cState", restGuarder(handler.UpdateStateContainerInfo)),
 		// 软删除容器
 		rest.Delete("/containers/soft/*cId", restGuarder(handler.MaskContainerInfo)),
 	)

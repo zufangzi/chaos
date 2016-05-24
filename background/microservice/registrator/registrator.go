@@ -2,10 +2,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	consulApi "github.com/hashicorp/consul/api"
 	"github.com/hashicorp/go-cleanhttp"
 	"log"
+	"net/http"
+	"opensource/chaos/background/server/dto/model"
 	"opensource/chaos/background/utils"
+	"opensource/chaos/background/utils/fasthttp"
 	"os"
 	"strconv"
 	"time"
@@ -18,6 +22,9 @@ var serviceTags []string
 var isNormal bool
 var fatalExit chan int
 var monitorInterval = flag.Int("monitor-interval", 2000, "Interval(in millisecond) between monitor attemps")
+var ARGS_CLOUD_SERVER_URL = flag.String("cloud-server", "10.32.27.76:8080", "Cloud Server Address Without 'http://' prefix")
+
+var PATH_CONTAINER_STATE = "http://" + *ARGS_CLOUD_SERVER_URL + "/api/containers/%s/%s"
 
 func initEnv() {
 	// 让命令行的命令生效
@@ -96,12 +103,16 @@ func main() {
 						log.Println("[REGISTRATOR]Now begin to register!")
 						isNormal = true
 						register()
+						// 注册信号量
+						updateState(utils.GetHostName(), model.CONTAINER_STATE_ALL_UP)
 					}
 				} else {
 					if isNormal {
 						log.Println("[REGISTRATOR]Now begin to deregister!")
 						isNormal = false
 						deregister()
+						// 取消信号量。如果是容器北山，就已经至少被mask掉了。
+						updateState(utils.GetHostName(), model.CONTAINER_STATE_ERROR)
 					}
 				}
 			}
@@ -129,4 +140,14 @@ func register() {
 
 func deregister() {
 	consulClient.Agent().ServiceDeregister(serviceId)
+}
+
+func updateState(cId string, cState int) {
+	log.Printf("[REGISTRATOR]now begin to update state, cid: %s, cstate: %s %n", cId, cState)
+	var resData map[string]interface{}
+	uri := fmt.Sprintf(PATH_CONTAINER_STATE, cId, cState)
+	fasthttp.JsonReqAndResHandler(uri, nil, &resData, "POST")
+	if int(resData["status"].(float64)) != http.StatusOK {
+		log.Println("[CHAOSWHISPER] request cloud server fail... CID: " + cId)
+	}
 }

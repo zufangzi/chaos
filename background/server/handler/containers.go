@@ -17,9 +17,9 @@ func CreateContainerInfo(pathParams map[string]string, data []byte) interface{} 
 }
 
 func UpdateStateContainerInfo(pathParams map[string]string, data []byte) interface{} {
-	var request map[string]int
+	request := make(map[string]int)
 	cId := pathParams["cId"]
-	cState := pathParams["state"]
+	cState := pathParams["cState"]
 	request["state"], _ = strconv.Atoi(cState)
 	mongo.UpdateContainerByIdUsingMap(cId, request)
 	return webUtils.ProcessResponseFully(http.StatusOK, nil, true)

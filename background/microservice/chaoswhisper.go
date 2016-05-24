@@ -39,6 +39,7 @@ func main() {
 		os.Setenv("DOCKER_HOST", "unix:///var/run/docker.sock")
 	}
 
+	utils.GetShell("mkdir -p " + SCRIPT_HOME)
 	utils.GetShell("wget " + *ARGS_SCRIPT_WGET_HOME + START_SCRIPT + " && mv " + START_SCRIPT + " " + SCRIPT_HOME)
 	utils.GetShell("wget " + *ARGS_SCRIPT_WGET_HOME + STOP_SCRIPT + " && mv " + STOP_SCRIPT + " " + SCRIPT_HOME)
 	utils.GetShell("wget " + *ARGS_SCRIPT_WGET_HOME + DELETE_SCRIPT + " && mv " + DELETE_SCRIPT + " " + SCRIPT_HOME)

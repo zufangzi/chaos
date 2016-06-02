@@ -33,8 +33,14 @@
 + 每个宿主机都启动Consul Agent，其中选择3-5个作为Server节点。组成集群。
 + 启动时候容器需要携带环境变量`$SERVICE_NAME`和`$SERVICE_PORT`或在容器Dockerfile中声明。结束。至此微服务所需的负载均衡、服务发现、服务注册、路由已经都起来了。
 
-**例外**
-待补充
+**go get**
+go get github.com/ant0ine/go-json-rest/rest
+go get github.com/garyburd/redigo/redis
+go get github.com/samalba/dockerclient
+go get github.com/tjz101/goprop
+go get gopkg.in/mgo.v2
+go get github.com/fsouza/go-dockerclient(golang.org/x/net/context被墙，自行处理~)
+go get github.com/hashicorp/consul/api  
 
 ##Introdution
 丁丁私有云平台server。提供微服务基础组件、监控、历史记录以及上线部署等的支持。具体后续更新

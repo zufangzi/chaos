@@ -1,7 +1,0 @@
-第三方文件需要：
-1. consul
-2. consul-template
-3. go1.5.linux-amd64.tar.gz
-4. pip-8.1.1.tar.gz
-5. setuptools-20.3.1.tar.gz
-此处由于文件大小限制不上传。直接从各自官网上下载即可。

@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"log"
-	// "net/http"
 	"opensource/chaos/common"
 	"opensource/chaos/domain/model/marathon"
 	"opensource/chaos/modules/oneclickdep/entity"

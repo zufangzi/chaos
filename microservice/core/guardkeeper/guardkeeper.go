@@ -11,7 +11,6 @@ import (
 
 var signPath, signFile string
 var MONITOR_INTERVAL = flag.Int("monitor-interval", 2, "Interval(in millisecond) between monitor attemps")
-var SCRIPT_WGET_HOME = "http://10.32.27.11/cc/preonline/container/"
 
 func initEnv() {
 	flag.Parse()
